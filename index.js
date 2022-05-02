@@ -1,47 +1,33 @@
 const { Client, Intents, Collection } = require('discord.js');
-const { token } = require('./config.json');
-const fs = require('node:fs');
+const config = require("./config.json");
+const fs = require('fs');
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({ 
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
+});
+
+//////////EVENT FILE HANDLING//////////////
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
-
 for (const file of eventFiles) {
+    const eventName = file.split(".")[0];
     const event = require(`./events/${file}`);
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
+    client.on(eventName, event.bind(null, client));
 }
+
+////////////COMMAND FILE HANDLING//////////////
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
+    const commandName = file.split(".")[0];
     const command = require(`./commands/${file}`);
-    client.commands.set(command.data.name, command);
+
+    console.log (`Attempt to load command ${commandName}`);
+    client.commands.set(commandName, command);
 }
 
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
+////////////////////////////////////////////////////
 
-    const command = client.commands.get(interaction.commandName);
-
-    if (!command) return;
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true});
-    }
-})
-
-client.on('messageCreate', (message) => {
-    if (message.content.toLowerCase().includes('hey bot')) {
-        message.channel.send('Hello there!');
-    }
-});
-
-client.login(token);
+client.login(config.token);
