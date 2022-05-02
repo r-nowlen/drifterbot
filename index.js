@@ -2,7 +2,7 @@ const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
 const fs = require('node:fs');
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
@@ -38,5 +38,10 @@ client.on('interactionCreate', async interaction => {
     }
 })
 
+client.on('messageCreate', (message) => {
+    if (message.content.toLowerCase().includes('hey bot')) {
+        message.channel.send('Hello there!');
+    }
+});
 
 client.login(token);
