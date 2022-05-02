@@ -1,11 +1,9 @@
-module.exports = (client, message) => {
-    console.log("messagecreate");
-    if (message.author.bot) return;
-
-    if (message.content.toLowerCase().includes("gambit")) {
-        const command = "gambit";
-        const cmd = client.commands.get(command);
-        if (!cmd) return;
-        cmd.run(client, message);
+module.exports = {
+	name: 'messageCreate',
+	execute(messageCreate) {
+        if (messageCreate.author.bot) return;
+        if (messageCreate.content.toLowerCase().includes("gambit")) {
+            messageCreate.channel.send("You're just standin' there, how 'bout some Gambit?");
         };
+	},
 };
