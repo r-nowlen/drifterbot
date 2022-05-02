@@ -4,7 +4,6 @@ const { Routes } = require('discord-api-types/v9');
 const config = require('./config.json');
 
 const commands = [];
-//const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 const commandFolders = fs.readdirSync('./commands');
 
